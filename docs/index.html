@@ -19,11 +19,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script
       type="text/javascript"
-      src="https://cdn.rawgit.com/Inndy/vue-clipboard2/master/dist/vue-clipboard.min.js"
+      src="ace/vue-clipboard.min.js"
     ></script>
     <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="jsonpath-0.8.0.js" type="text/javascript"></script>
-    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script src="ace/vkbeautify.js"></script>
   </head>
 
   <!--hhh-->
@@ -239,7 +239,9 @@
             this.selected = true;
             eventHub.$emit("other-clicked");
             this.justClicked = true;
-            //console.log(this.keyName);
+            console.log(this.keyName);
+            console.log(this.item);
+
 
             if (!app.isResult) {
               this.path = this.searchObject(
@@ -247,7 +249,10 @@
                 this.parentJson,
                 this.keyName
               );
-              this.$emit("update", this.path);
+
+              // 将值粘贴到剪贴板中
+              this.$copyText(this.path+"="+this.item)
+              this.$emit("update", this.path, this.item);
             }
           },
 
@@ -278,10 +283,10 @@
             return output;
           },
           // sends this message up the chain
-          sendUpdate: function (path) {
+          sendUpdate: function (path, keyValue) {
             // if (path) console.log(path);
             // else console.log("no ");
-            this.$emit("update", path);
+            this.$emit("update", path, keyValue);
           },
           deselect: function () {
             if (this.justClicked) {
@@ -405,9 +410,10 @@
             );
           },
           // update the path and reset the "Copy" button when a json key is clicked
-          updatePath: function (newPath) {
+          updatePath: function (newPath, keyValue) {
             //console.log(newPath);
             this.path = newPath;
+            this.path = this.path+"="+keyValue
             this.copy = "Copy";
           },
           copied: function () {
